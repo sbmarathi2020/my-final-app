@@ -16,8 +16,6 @@ import RecentEntriesPage from './pages/RecentEntriesPage';
 import Customers from './pages/Customers';
 import Bills from './pages/Bills';
 import Items from './pages/Items';
-import { registerSW } from 'virtual:pwa-register';
-registerSW({ immediate: true });
 
 // १. भाषा शब्दावली (Translations)
 const translations = {
@@ -78,7 +76,7 @@ function App() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [lang, setLang] = useState<'mr' | 'en'>('mr');
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false); // ड्रॉपडाउनसाठी स्टेट
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const t = translations[lang];
 
@@ -103,18 +101,6 @@ function App() {
             await supabase.auth.signOut();
         }
     };
-
-    // भाषा बदलण्याचे फंक्शन
-    <button
-        onClick={() => {
-            setLang(prev => prev === 'mr' ? 'en' : 'mr'); // थेट स्टेट बदला
-            setIsSettingsOpen(false);
-        }}
-        className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
-    >
-        <RefreshCw size={16} className="mr-3 text-blue-600" />
-        {lang === 'mr' ? 'Switch to English' : 'मराठीमध्ये बदला'}
-    </button>
 
     const SidebarButton = ({ icon: Icon, label, id, color = "white" }: SidebarButtonProps) => (
         <button
@@ -155,8 +141,6 @@ function App() {
 
                 <div className="p-6 flex flex-col items-center border-b border-[#2B3A5A]">
                     <div className="w-full flex justify-between items-center mb-4 relative">
-
-                        {/* Settings Button & Dropdown */}
                         <div className="relative">
                             <button
                                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
@@ -165,13 +149,10 @@ function App() {
                                 <Settings size={20} />
                             </button>
 
-                            {/* ड्रॉपडाउन मेनू */}
                             {isSettingsOpen && (
                                 <>
                                     <div className="fixed inset-0 z-10" onClick={() => setIsSettingsOpen(false)}></div>
                                     <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-2xl z-20 py-2 border border-gray-100 animate-in fade-in zoom-in duration-200">
-
-                                        {/* भाषा बदलण्याचे बटण */}
                                         <button
                                             onClick={() => { setLang(lang === 'mr' ? 'en' : 'mr'); setIsSettingsOpen(false); }}
                                             className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
@@ -179,10 +160,7 @@ function App() {
                                             <RefreshCw size={16} className="mr-3 text-blue-600" />
                                             {lang === 'mr' ? 'Switch to English' : 'मराठीमध्ये बदला'}
                                         </button>
-
                                         <div className="border-t border-gray-100 my-1"></div>
-
-                                        {/* लॉगआउट बटण */}
                                         <button
                                             onClick={() => { handleLogout(); setIsSettingsOpen(false); }}
                                             className="w-full flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -200,7 +178,6 @@ function App() {
                         </button>
                     </div>
 
-                    {/* Profile Section */}
                     <div className="w-16 h-16 rounded-full border-2 border-white overflow-hidden shadow-md bg-[#0D1A30] flex items-center justify-center">
                         {user.user_metadata?.avatar_url ? (
                             <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
@@ -215,11 +192,9 @@ function App() {
 
                 <nav className="flex-1 px-3 mt-4 overflow-y-auto scrollbar-hide">
                     <SidebarButton icon={LayoutDashboard} label={t.dashboard} id="Dashboard" />
-
                     <div className="mt-6 px-4 mb-2 text-[10px] font-black text-blue-400 uppercase tracking-[0.1em]">{t.transactions}</div>
                     <SidebarButton icon={PlusCircle} label={t.newEntry} id="NewEntry" color="#3b82f6" />
                     <SidebarButton icon={History} label={t.allEntries} id="RecentEntriesPage" />
-
                     <div className="mt-6 px-4 mb-2 text-[10px] font-black text-orange-400 uppercase tracking-[0.1em]">{t.management}</div>
                     <SidebarButton icon={Wallet} label={t.cashInHand} id="CashInHand" color="#fbbf24" />
                     <SidebarButton icon={Landmark} label={t.bankBalance} id="BankBalance" color="#60a5fa" />
@@ -254,7 +229,6 @@ function App() {
                     </div>
 
                     <div className="flex gap-1.5 md:gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                        {/* New Entry Button */}
                         <button
                             onClick={() => setActiveTab('NewEntry')}
                             className={`flex items-center space-x-1 px-3 py-1.5 rounded-full transition-all border ${activeTab === 'NewEntry' ? 'bg-blue-600 text-white border-blue-600' : 'bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100'}`}
@@ -262,8 +236,6 @@ function App() {
                             <PlusCircle size={14} />
                             <span className="font-bold text-[10px] md:text-xs">New Entry</span>
                         </button>
-
-                        {/* Stock Button */}
                         <button
                             onClick={() => setActiveTab('Items')}
                             className={`flex items-center space-x-1 px-3 py-1.5 rounded-full transition-all border ${activeTab === 'Items' ? 'bg-violet-600 text-white border-violet-600' : 'bg-violet-50 text-violet-600 border-violet-100 hover:bg-violet-100'}`}
@@ -271,8 +243,6 @@ function App() {
                             <Package size={14} />
                             <span className="font-bold text-[10px] md:text-xs">Stock</span>
                         </button>
-
-                        {/* Cash Button - नवीन जोडलेले बटण */}
                         <button
                             onClick={() => setActiveTab('CashInHand')}
                             className={`flex items-center space-x-1 px-3 py-1.5 rounded-full transition-all border ${activeTab === 'CashInHand' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'}`}
@@ -280,8 +250,6 @@ function App() {
                             <Wallet size={14} />
                             <span className="font-bold text-[10px] md:text-xs">Cash</span>
                         </button>
-
-                        {/* Bank Button */}
                         <button
                             onClick={() => setActiveTab('BankBalance')}
                             className={`flex items-center space-x-1 px-3 py-1.5 rounded-full transition-all border ${activeTab === 'BankBalance' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-indigo-50 text-indigo-600 border-indigo-100 hover:bg-indigo-100'}`}
@@ -298,7 +266,7 @@ function App() {
                         {activeTab === 'NewEntry' && <NewEntry />}
                         {activeTab === 'RecentEntriesPage' && (
                             <RecentEntriesPage
-                                setActiveTab={(tab: string) => setActiveTab(tab as typeof activeTab)}
+                                setActiveTab={(tab: string) => setActiveTab(tab as TabId)}
                             />
                         )}
                         {activeTab === 'CashInHand' && <CashInHand />}
